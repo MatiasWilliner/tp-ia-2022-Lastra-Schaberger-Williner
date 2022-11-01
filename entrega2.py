@@ -75,8 +75,13 @@ def armar_mapa(filas, columnas, cantidad_paredes, cantidad_cajas_objetivos):
             return contador == 0
         return contador <= 1
 
-    for caja in cajas:
-        restricciones.append((tuple([caja]+paredes), menor_igual_de_una_pared_adyacente))
+    if len(paredes) > 1:
+        for p1, p2 in combinations(paredes,2):
+            for caja in cajas:
+                restricciones.append(((caja, p1, p2), menor_igual_de_una_pared_adyacente))
+    else:
+        for caja in cajas:
+                restricciones.append((tuple([caja]+paredes), menor_igual_de_una_pared_adyacente))
 
     problema = CspProblem(variables, dominio, restricciones)
 
