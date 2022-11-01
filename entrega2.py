@@ -2,8 +2,6 @@ from itertools import combinations
 from simpleai.search import CspProblem, backtrack, MOST_CONSTRAINED_VARIABLE, LEAST_CONSTRAINING_VALUE, HIGHEST_DEGREE_VARIABLE
 
 def armar_mapa(filas, columnas, cantidad_paredes, cantidad_cajas_objetivos):
-    variables = ['pj']
-
     paredes = []
     cajas = []
     objetivos = []
@@ -14,7 +12,7 @@ def armar_mapa(filas, columnas, cantidad_paredes, cantidad_cajas_objetivos):
         cajas.append('c'+str(caja_objetivo))
         objetivos.append('o'+str(caja_objetivo))
 
-    variables = variables + paredes + cajas + objetivos
+    variables = ['pj'] + cajas + objetivos + paredes 
     
     dominio = {}
     
@@ -24,7 +22,7 @@ def armar_mapa(filas, columnas, cantidad_paredes, cantidad_cajas_objetivos):
             for col in range(columnas):
                 if var not in cajas:
                     aux.append((fila,col))
-                elif fila != col:
+                elif (fila, col) not in [(0,0), (filas-1,0), (0, columnas-1), (filas-1, columnas-1)]:
                     aux.append((fila, col))     # Restriccion unaria - Cajas no pueden estar en las esquinas, lo saco del dominio
         dominio[var] = aux
 
@@ -55,7 +53,7 @@ def armar_mapa(filas, columnas, cantidad_paredes, cantidad_cajas_objetivos):
     # Las cajas no deben tener más de una pared adyacente. Si la caja está en los bordes, ya tiene una adyacente.
     def menor_igual_de_una_pared_adyacente(variables, values):
         fila_caja, col_caja = values[0] # Agregamos primero en la restriccion a la caja
-
+        #print(fila_caja, col_caja)
         pos_adyacentes = []
         if fila_caja > 0:
             pos_adyacentes.append((fila_caja-1, col_caja))
@@ -64,16 +62,18 @@ def armar_mapa(filas, columnas, cantidad_paredes, cantidad_cajas_objetivos):
         if col_caja > 0:
             pos_adyacentes.append((fila_caja, col_caja-1))
         if col_caja < columnas-1:
-            pos_adyacentes.append((fila, col_caja+1))
-
+            pos_adyacentes.append((fila_caja, col_caja+1))
+        #print(pos_adyacentes)
         contador = 0
         for val in values:
             if val in pos_adyacentes:
                 contador += 1
 
         esta_en_borde = fila_caja == 0 or col_caja == 0 or fila_caja == filas-1 or col_caja == columnas-1
-
-        return (esta_en_borde and contador == 0) or ((not esta_en_borde) and contador <= 1)
+        #print(values[0], values[1], esta_en_borde, contador)
+        if esta_en_borde:
+            return contador == 0
+        return contador <= 1
 
     for caja in cajas:
         restricciones.append((tuple([caja]+paredes), menor_igual_de_una_pared_adyacente))
@@ -99,6 +99,7 @@ def armar_mapa(filas, columnas, cantidad_paredes, cantidad_cajas_objetivos):
     for obj in objetivos:
         resultado_objetivos.append(solucion[obj])
 
+    #print(solucion)
     return (resultado_paredes, resultado_cajas, resultado_objetivos, solucion['pj'])
 
-#print(armar_mapa(4,5,3,5))
+#print(armar_mapa(3,3,1,1))
