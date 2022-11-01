@@ -14,6 +14,7 @@ def jugar(paredes, cajas, objetivos, jugador, maximos_movimientos):
     # El estado va a estar conformado de la siguiente manera:
     # (pos_pj, mov_restantes, listado_cajas)
     # ((fila, col), 30, ((fila, col), (fila, col), (fila, col), (fila, col)))
+    cajas.sort()
     INICIAL = (jugador, maximos_movimientos, tuple(cajas))
     PAREDES = tuple(paredes)
     OBJETIVOS = tuple(objetivos)
@@ -88,7 +89,7 @@ def jugar(paredes, cajas, objetivos, jugador, maximos_movimientos):
             movimiento = MOVIMIENTOS[accion]
             fila_caja_mover, col_caja_mover = cajas_modificables[indice]
             cajas_modificables[indice] = [fila_caja_mover + movimiento[0], col_caja_mover + movimiento[1]]
-
+            cajas_modificables.sort()
             #resultado_secuencia.append((accion))
 
             return (pos_nueva, movimientos-1, tuple(tuple(caja) for caja in cajas_modificables))
